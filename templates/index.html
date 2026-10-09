@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>AZ-104 Study Tracker</title>
+    <style>
+        :root {
+            font-family: system-ui, -apple-system, sans-serif;
+            color: #172033;
+            background: #f3f6fb;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 32px 16px;
+        }
+
+        main {
+            max-width: 850px;
+            margin: auto;
+        }
+
+        .hero,
+        .panel {
+            background: white;
+            border: 1px solid #e0e6ef;
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 20px;
+        }
+
+        .hero {
+            background: #172554;
+            color: white;
+        }
+
+        .eyebrow {
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            font-size: 12px;
+            opacity: .8;
+        }
+
+        h1 {
+            margin-bottom: 8px;
+        }
+
+        h2 {
+            margin-top: 0;
+        }
+
+        .message {
+            color: #dbeafe;
+        }
+
+        .stats {
+            display: flex;
+            gap: 24px;
+            flex-wrap: wrap;
+            margin-top: 22px;
+        }
+
+        .stat strong {
+            display: block;
+            font-size: 26px;
+        }
+
+        .progress-track {
+            height: 10px;
+            border-radius: 20px;
+            background: #e7edf5;
+            overflow: hidden;
+            margin: 14px 0;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: #16a34a;
+            transition: width .2s ease;
+        }
+
+        .topic {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            padding: 16px 0;
+            border-bottom: 1px solid #e7edf5;
+        }
+
+        .topic:last-child {
+            border-bottom: 0;
+        }
+
+        .topic-name {
+            font-weight: 600;
+        }
+
+        .done {
+            color: #15803d;
+            font-size: 13px;
+            margin-top: 5px;
+        }
+
+        button {
+            border: 0;
+            border-radius: 8px;
+            padding: 10px 14px;
+            background: #2563eb;
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            white-space: nowrap;
+        }
+
+        button:hover {
+            background: #1d4ed8;
+        }
+
+        .footer {
+            color: #64748b;
+            font-size: 13px;
+            text-align: center;
+        }
+
+        @media (max-width: 520px) {
+            .topic {
+                align-items: flex-start;
+                flex-direction: column;
+            }
+
+            button {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <main>
+        <section class="hero">
+            <div class="eyebrow">Cloud learning workspace</div>
+            <h1>AZ-104 Study Tracker</h1>
+            <p class="message">{{ app_message }}</p>
+
+            <div class="stats">
+                <div class="stat">
+                    <strong>{{ completed }}/{{ total }}</strong>
+                    <span>Topics completed</span>
+                </div>
+                <div class="stat">
+                    <strong>{{ progress }}%</strong>
+                    <span>Overall progress</span>
+                </div>
+            </div>
+        </section>
+
+        <section class="panel">
+            <h2>Your learning plan</h2>
+            <div class="progress-track" role="progressbar" aria-label="Study progress" aria-valuenow="{{ progress }}"
+                aria-valuemin="0" aria-valuemax="100">
+                <div class="progress-bar" style="width: {{ progress }}%"></div>
+            </div>
+
+            {% for topic in topics %}
+            <div class="topic">
+                <div>
+                    <div class="topic-name">{{ topic.name }}</div>
+                    {% if topic.completed %}
+                    <div class="done">✓ Completed</div>
+                    {% else %}
+                    <div>Not completed</div>
+                    {% endif %}
+                </div>
+
+                <form action="{{ url_for('toggle_topic', topic_id=topic.id) }}" method="post">
+                    <button type="submit">
+                        {{ "Mark incomplete" if topic.completed else "Mark complete" }}
+                    </button>
+                </form>
+            </div>
+            {% endfor %}
+        </section>
+
+        <section class="panel">
+            <h2>Deployment information</h2>
+            <p><strong>Application:</strong> AZ-104 Study Tracker</p>
+            <p><strong>Environment:</strong> {{ environment }}</p>
+            <p><strong>Health endpoint:</strong> <a href="/health">Check application health</a></p>
+        </section>
+
+        <p class="footer">Built with Python and Flask · AZ-104 practice project</p>
+    </main>
+</body>
+
+</html>
