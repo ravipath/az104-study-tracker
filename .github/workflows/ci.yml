@@ -31,6 +31,8 @@ jobs:
       - name: Check Python syntax
         run: uv run python -m py_compile app.py
 
-      - name: Check application health
-        run: |
-          uv run python -c "import app; print('Application imported successfully')"
+      - name: Check application import
+        run: uv run python -c "import app; print('Application imported successfully')"
+
+      - name: Run tests
+        run: uv run pytest -v
