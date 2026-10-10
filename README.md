@@ -1,4 +1,4 @@
-# Azure Subnet Studio
+# Azure Subnet Calculator
 
 An explanation-first Azure VNet address-space and subnetting calculator for AZ-104 study.
 
@@ -23,7 +23,7 @@ Most subnet calculators stop at the answer. This one shows the working: canonica
 This project uses [uv](https://docs.astral.sh/uv/) and `pyproject.toml`; it does not use `requirements.txt`.
 
 ```bash
-cd /home/ravi/az-arena/az104-study-tracker
+cd /home/ravi/az-arena/azure-subnet-calculator
 uv sync
 uv run flask --app app run --host 127.0.0.1 --port 5000
 ```
@@ -38,7 +38,7 @@ Enter:
 10.0.5.23/20
 ```
 
-Azure Subnet Studio will explain:
+Azure Subnet Calculator will explain:
 
 | Item | Result |
 | --- | --- |
