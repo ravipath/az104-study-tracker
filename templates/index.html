@@ -1,202 +1,984 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-
 <head>
-    <meta charset="UTF-8">
+    <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>AZ-104 Study Tracker</title>
+    <meta name="description" content="A beginner-friendly Azure VNet and subnetting calculator for AZ-104 study.">
+    <title>Azure Subnet Studio</title>
     <style>
         :root {
-            font-family: system-ui, -apple-system, sans-serif;
-            color: #172033;
-            background: #f3f6fb;
+            color-scheme: light;
+            --ink: #11213d;
+            --muted: #5e6d85;
+            --surface: #ffffff;
+            --canvas: #f4f7fc;
+            --border: #dce5f2;
+            --blue: #1667d9;
+            --blue-dark: #0d4da9;
+            --blue-soft: #ebf4ff;
+            --teal: #087c78;
+            --teal-soft: #e6f7f5;
+            --green: #13724d;
+            --green-soft: #e9f8ee;
+            --red: #b5384b;
+            --red-soft: #fff0f2;
+            --shadow: 0 18px 45px rgba(29, 57, 101, .09);
+            font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
         }
 
-        * {
-            box-sizing: border-box;
-        }
+        * { box-sizing: border-box; }
+
+        html { scroll-behavior: smooth; }
 
         body {
             margin: 0;
-            padding: 32px 16px;
+            min-width: 320px;
+            color: var(--ink);
+            background:
+                radial-gradient(circle at 3% 2%, rgba(66, 156, 255, .16), transparent 26rem),
+                linear-gradient(180deg, #fafdff 0, var(--canvas) 38rem);
         }
 
-        main {
-            max-width: 850px;
-            margin: auto;
+        a { color: var(--blue-dark); }
+
+        button, input { font: inherit; }
+
+        .shell {
+            width: min(1180px, calc(100% - 32px));
+            margin: 0 auto;
         }
 
-        .hero,
-        .panel {
-            background: white;
-            border: 1px solid #e0e6ef;
-            border-radius: 16px;
-            padding: 24px;
-            margin-bottom: 20px;
-        }
-
-        .hero {
-            background: #172554;
-            color: white;
-        }
-
-        .eyebrow {
-            text-transform: uppercase;
-            letter-spacing: 1.5px;
-            font-size: 12px;
-            opacity: .8;
-        }
-
-        h1 {
-            margin-bottom: 8px;
-        }
-
-        h2 {
-            margin-top: 0;
-        }
-
-        .message {
-            color: #dbeafe;
-        }
-
-        .stats {
-            display: flex;
-            gap: 24px;
-            flex-wrap: wrap;
-            margin-top: 22px;
-        }
-
-        .stat strong {
-            display: block;
-            font-size: 26px;
-        }
-
-        .progress-track {
-            height: 10px;
-            border-radius: 20px;
-            background: #e7edf5;
-            overflow: hidden;
-            margin: 14px 0;
-        }
-
-        .progress-bar {
-            height: 100%;
-            background: #16a34a;
-            transition: width .2s ease;
-        }
-
-        .topic {
+        .site-header {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            gap: 16px;
-            padding: 16px 0;
-            border-bottom: 1px solid #e7edf5;
+            gap: 20px;
+            padding: 22px 0;
         }
 
-        .topic:last-child {
-            border-bottom: 0;
+        .brand {
+            display: inline-flex;
+            align-items: center;
+            gap: 11px;
+            color: var(--ink);
+            font-weight: 780;
+            letter-spacing: -.02em;
+            text-decoration: none;
         }
 
-        .topic-name {
-            font-weight: 600;
-        }
-
-        .done {
-            color: #15803d;
-            font-size: 13px;
-            margin-top: 5px;
-        }
-
-        button {
-            border: 0;
-            border-radius: 8px;
-            padding: 10px 14px;
-            background: #2563eb;
+        .brand-mark {
+            display: grid;
+            width: 34px;
+            height: 34px;
+            place-items: center;
             color: white;
-            font-weight: 600;
+            background: linear-gradient(135deg, #1683e7, #1454b7);
+            border-radius: 10px;
+            box-shadow: 0 6px 14px rgba(15, 90, 197, .25);
+        }
+
+        .header-note {
+            margin: 0;
+            color: var(--muted);
+            font-size: .88rem;
+        }
+
+        .hero {
+            display: grid;
+            grid-template-columns: 1.3fr .7fr;
+            gap: 28px;
+            padding: clamp(28px, 5vw, 60px);
+            overflow: hidden;
+            color: white;
+            background:
+                radial-gradient(circle at 88% 14%, rgba(99, 224, 223, .28), transparent 17rem),
+                linear-gradient(118deg, #0e2f66, #114990 65%, #0a559b);
+            border-radius: 24px;
+            box-shadow: var(--shadow);
+        }
+
+        .eyebrow {
+            margin: 0 0 12px;
+            color: #a9dcff;
+            font-size: .75rem;
+            font-weight: 780;
+            letter-spacing: .13em;
+            text-transform: uppercase;
+        }
+
+        h1, h2, h3, p { margin-top: 0; }
+
+        h1 {
+            max-width: 690px;
+            margin-bottom: 15px;
+            font-size: clamp(2.15rem, 5vw, 4rem);
+            line-height: .98;
+            letter-spacing: -.055em;
+        }
+
+        .hero-copy {
+            max-width: 650px;
+            margin-bottom: 0;
+            color: #d9ecff;
+            font-size: clamp(1rem, 2vw, 1.14rem);
+            line-height: 1.65;
+        }
+
+        .hero-card {
+            align-self: end;
+            padding: 20px;
+            color: #e9f8ff;
+            background: rgba(6, 28, 70, .35);
+            border: 1px solid rgba(213, 241, 255, .23);
+            border-radius: 16px;
+            backdrop-filter: blur(8px);
+        }
+
+        .hero-card strong {
+            display: block;
+            margin-bottom: 7px;
+            color: white;
+            font-size: 1.45rem;
+        }
+
+        .hero-card p {
+            margin: 0;
+            font-size: .94rem;
+            line-height: 1.55;
+        }
+
+        main { padding: 26px 0 56px; }
+
+        .workspace {
+            display: grid;
+            grid-template-columns: minmax(0, .88fr) minmax(0, 1.12fr);
+            gap: 22px;
+            align-items: start;
+        }
+
+        .panel,
+        .result-card,
+        .empty-state {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 18px;
+            box-shadow: 0 8px 26px rgba(34, 61, 104, .04);
+        }
+
+        .calculator-panel { padding: clamp(20px, 3vw, 30px); }
+
+        .panel-heading {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 18px;
+            margin-bottom: 24px;
+        }
+
+        .panel-heading h2,
+        .result-title h2 {
+            margin-bottom: 6px;
+            font-size: 1.35rem;
+            letter-spacing: -.025em;
+        }
+
+        .panel-heading p,
+        .result-title p {
+            margin-bottom: 0;
+            color: var(--muted);
+            font-size: .94rem;
+            line-height: 1.55;
+        }
+
+        .example-button,
+        .button-secondary,
+        .button-ghost,
+        .button-primary {
+            border: 0;
+            border-radius: 10px;
             cursor: pointer;
-            white-space: nowrap;
+            font-weight: 720;
+            transition: transform .15s ease, background .15s ease, box-shadow .15s ease;
         }
 
-        button:hover {
-            background: #1d4ed8;
+        .example-button:hover,
+        .button-secondary:hover,
+        .button-ghost:hover,
+        .button-primary:hover { transform: translateY(-1px); }
+
+        .example-button {
+            flex: none;
+            padding: 9px 11px;
+            color: var(--blue-dark);
+            background: var(--blue-soft);
+            font-size: .82rem;
         }
 
-        .footer {
-            color: #64748b;
-            font-size: 13px;
+        fieldset {
+            min-width: 0;
+            margin: 0;
+            padding: 0;
+            border: 0;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 7px;
+            font-size: .87rem;
+            font-weight: 760;
+        }
+
+        .label-hint {
+            display: block;
+            margin-top: 4px;
+            color: var(--muted);
+            font-size: .78rem;
+            font-weight: 500;
+            line-height: 1.4;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px 13px;
+            color: var(--ink);
+            background: #fbfdff;
+            border: 1px solid #bfcde0;
+            border-radius: 10px;
+            outline: none;
+        }
+
+        input:focus {
+            border-color: var(--blue);
+            box-shadow: 0 0 0 4px rgba(22, 103, 217, .13);
+        }
+
+        input[aria-invalid="true"] {
+            border-color: var(--red);
+            background: #fff9fa;
+        }
+
+        .field { margin-bottom: 23px; }
+
+        .field-error,
+        .row-errors {
+            margin: 7px 0 0;
+            padding-left: 18px;
+            color: var(--red);
+            font-size: .82rem;
+            line-height: 1.45;
+        }
+
+        .planning-heading {
+            display: flex;
+            align-items: end;
+            justify-content: space-between;
+            gap: 14px;
+            margin: 25px 0 11px;
+        }
+
+        .planning-heading h3 {
+            margin-bottom: 0;
+            font-size: 1rem;
+        }
+
+        .planning-heading p {
+            margin: 4px 0 0;
+            color: var(--muted);
+            font-size: .82rem;
+            line-height: 1.45;
+        }
+
+        .subnet-rows { display: grid; gap: 10px; }
+
+        .subnet-row {
+            display: grid;
+            grid-template-columns: minmax(100px, .78fr) minmax(145px, 1fr) auto;
+            gap: 10px;
+            align-items: start;
+            padding: 12px;
+            background: #f9fbff;
+            border: 1px solid #e0e8f3;
+            border-radius: 12px;
+        }
+
+        .subnet-row .field { margin: 0; }
+
+        .subnet-row label {
+            margin-bottom: 5px;
+            font-size: .77rem;
+        }
+
+        .remove-row {
+            align-self: end;
+            min-height: 43px;
+            padding: 0 10px;
+            color: #697991;
+            background: transparent;
+            border: 1px solid #cbd7e7;
+            border-radius: 9px;
+            cursor: pointer;
+        }
+
+        .remove-row:hover {
+            color: var(--red);
+            border-color: #e6afb8;
+            background: #fff7f8;
+        }
+
+        .button-secondary {
+            margin-top: 11px;
+            padding: 10px 12px;
+            color: var(--blue-dark);
+            background: white;
+            border: 1px solid #aec6e8;
+            font-size: .86rem;
+        }
+
+        .form-actions {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-top: 25px;
+        }
+
+        .button-primary {
+            width: 100%;
+            padding: 13px 17px;
+            color: white;
+            background: linear-gradient(135deg, #116be3, #0d54bf);
+            box-shadow: 0 8px 18px rgba(16, 92, 202, .2);
+        }
+
+        .button-primary:hover { background: linear-gradient(135deg, #0f61d0, #0949a7); }
+
+        .input-note {
+            margin: 13px 0 0;
+            color: var(--muted);
+            font-size: .77rem;
+            line-height: 1.5;
+        }
+
+        .results-stack { display: grid; gap: 18px; }
+
+        .empty-state {
+            min-height: 330px;
+            display: grid;
+            place-content: center;
+            padding: 36px;
             text-align: center;
         }
 
-        @media (max-width: 520px) {
-            .topic {
-                align-items: flex-start;
-                flex-direction: column;
-            }
+        .empty-icon {
+            display: grid;
+            width: 54px;
+            height: 54px;
+            margin: 0 auto 15px;
+            place-items: center;
+            color: var(--teal);
+            background: var(--teal-soft);
+            border-radius: 16px;
+            font-size: 1.5rem;
+        }
 
-            button {
-                width: 100%;
-            }
+        .empty-state h2 { margin-bottom: 8px; }
+
+        .empty-state p {
+            max-width: 360px;
+            margin: 0;
+            color: var(--muted);
+            line-height: 1.6;
+        }
+
+        .status {
+            display: flex;
+            gap: 10px;
+            align-items: flex-start;
+            padding: 14px 15px;
+            border-radius: 12px;
+            font-size: .9rem;
+            line-height: 1.45;
+        }
+
+        .status strong { display: block; margin-bottom: 1px; }
+        .status p { margin: 0; }
+
+        .status-error {
+            color: #872b3a;
+            background: var(--red-soft);
+            border: 1px solid #f2c7cf;
+        }
+
+        .status-success {
+            color: #135f43;
+            background: var(--green-soft);
+            border: 1px solid #c5e7d1;
+        }
+
+        .result-card { overflow: hidden; }
+
+        .result-intro {
+            padding: 23px 24px;
+            background: linear-gradient(112deg, #eef7ff, #f8fcff);
+            border-bottom: 1px solid #dce8f6;
+        }
+
+        .result-title {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 16px;
+        }
+
+        .tag {
+            display: inline-flex;
+            flex: none;
+            align-items: center;
+            min-height: 28px;
+            padding: 0 9px;
+            color: var(--blue-dark);
+            background: white;
+            border: 1px solid #c6dbf4;
+            border-radius: 999px;
+            font-size: .76rem;
+            font-weight: 780;
+        }
+
+        .canonical {
+            margin: 20px 0 0;
+            padding: 15px 16px;
+            color: #063b78;
+            background: white;
+            border: 1px solid #c7ddf5;
+            border-radius: 11px;
+        }
+
+        .canonical span {
+            display: block;
+            margin-bottom: 3px;
+            color: #547090;
+            font-size: .76rem;
+            font-weight: 720;
+            letter-spacing: .05em;
+            text-transform: uppercase;
+        }
+
+        .canonical code {
+            font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+            font-size: 1.1rem;
+            font-weight: 800;
+        }
+
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 1px;
+            background: var(--border);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .metric {
+            min-height: 104px;
+            padding: 17px 18px;
+            background: white;
+        }
+
+        .metric-label {
+            display: block;
+            margin-bottom: 8px;
+            color: var(--muted);
+            font-size: .74rem;
+            font-weight: 750;
+            letter-spacing: .06em;
+            text-transform: uppercase;
+        }
+
+        .metric strong {
+            display: block;
+            overflow-wrap: anywhere;
+            font-size: 1rem;
+            line-height: 1.3;
+            letter-spacing: -.02em;
+        }
+
+        .metric small {
+            display: block;
+            margin-top: 5px;
+            color: var(--muted);
+            font-size: .77rem;
+        }
+
+        details { border-top: 1px solid var(--border); }
+
+        details > summary {
+            padding: 16px 20px;
+            color: var(--blue-dark);
+            cursor: pointer;
+            font-size: .91rem;
+            font-weight: 760;
+            list-style: none;
+        }
+
+        details > summary::-webkit-details-marker { display: none; }
+        details > summary::after {
+            float: right;
+            content: "+";
+            font-size: 1.25rem;
+            font-weight: 450;
+            line-height: .8;
+        }
+
+        details[open] > summary::after { content: "−"; }
+
+        .maths { padding: 2px 20px 21px; }
+
+        .maths-intro {
+            margin: 2px 0 14px;
+            color: var(--muted);
+            font-size: .87rem;
+            line-height: 1.5;
+        }
+
+        .maths-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 10px;
+            margin: 0;
+            padding: 0;
+            list-style: none;
+        }
+
+        .math-step {
+            min-width: 0;
+            padding: 13px;
+            background: #f8fbff;
+            border: 1px solid #e0e9f5;
+            border-radius: 11px;
+        }
+
+        .step-number {
+            display: inline-block;
+            margin-bottom: 8px;
+            color: var(--blue);
+            font-size: .72rem;
+            font-weight: 850;
+            letter-spacing: .07em;
+        }
+
+        .math-step h4 {
+            margin: 0 0 6px;
+            font-size: .89rem;
+            letter-spacing: -.01em;
+        }
+
+        .math-line {
+            margin: 0 0 7px;
+            overflow-wrap: anywhere;
+            color: #0c579e;
+            font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+            font-size: .82rem;
+            font-weight: 700;
+            line-height: 1.45;
+        }
+
+        .math-step p {
+            margin: 0;
+            color: var(--muted);
+            font-size: .79rem;
+            line-height: 1.45;
+        }
+
+        .subnet-result { padding: 24px; }
+
+        .subnet-result > h2 {
+            margin-bottom: 5px;
+            font-size: 1.25rem;
+            letter-spacing: -.025em;
+        }
+
+        .subnet-result > p {
+            margin-bottom: 18px;
+            color: var(--muted);
+            font-size: .9rem;
+        }
+
+        .table-wrap { overflow-x: auto; }
+
+        table {
+            width: 100%;
+            min-width: 710px;
+            border-collapse: separate;
+            border-spacing: 0;
+            overflow: hidden;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+        }
+
+        th, td {
+            padding: 13px 14px;
+            text-align: left;
+            vertical-align: top;
+            border-bottom: 1px solid var(--border);
+        }
+
+        th {
+            color: #536783;
+            background: #f7faff;
+            font-size: .71rem;
+            letter-spacing: .055em;
+            text-transform: uppercase;
+        }
+
+        td {
+            font-size: .85rem;
+            line-height: 1.45;
+        }
+
+        tbody tr:last-child td { border-bottom: 0; }
+        td code {
+            color: #0753a1;
+            font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+            font-size: .82rem;
+            font-weight: 720;
+        }
+
+        .subnet-name { font-weight: 780; }
+
+        .table-maths {
+            min-width: 160px;
+            border: 0;
+        }
+
+        .table-maths > summary { padding: 0; }
+
+        .table-maths .maths {
+            width: min(620px, 74vw);
+            padding: 15px 0 0;
+        }
+
+        .inline-empty {
+            padding: 18px;
+            color: var(--muted);
+            background: #f7faff;
+            border: 1px dashed #c7d5e7;
+            border-radius: 12px;
+            font-size: .9rem;
+            line-height: 1.55;
+        }
+
+        .site-footer {
+            padding: 18px 0 30px;
+            color: var(--muted);
+            font-size: .79rem;
+            text-align: center;
+        }
+
+        @media (max-width: 930px) {
+            .workspace { grid-template-columns: 1fr; }
+            .calculator-panel { order: 1; }
+            .results-stack { order: 2; }
+        }
+
+        @media (max-width: 650px) {
+            .shell { width: min(100% - 22px, 1180px); }
+            .site-header { padding: 14px 0; }
+            .header-note { display: none; }
+            .hero { grid-template-columns: 1fr; gap: 20px; border-radius: 18px; }
+            .subnet-row { grid-template-columns: 1fr; gap: 9px; }
+            .remove-row { width: 100%; }
+            .maths-grid { grid-template-columns: 1fr; }
+            .summary-grid { grid-template-columns: 1fr; }
+            .metric { min-height: 0; }
+            .result-intro, .subnet-result { padding: 20px 16px; }
+            .maths { padding: 2px 16px 18px; }
         }
     </style>
 </head>
-
 <body>
-    <main>
-        <section class="hero">
-            <div class="eyebrow">Cloud learning workspace</div>
-            <h1>AZ-104 Study Tracker</h1>
-            <p class="message">{{ app_message }}</p>
-
-            <div class="stats">
-                <div class="stat">
-                    <strong>{{ completed }}/{{ total }}</strong>
-                    <span>Topics completed</span>
-                </div>
-                <div class="stat">
-                    <strong>{{ progress }}%</strong>
-                    <span>Overall progress</span>
-                </div>
-            </div>
-        </section>
-
-        <section class="panel">
-            <h2>Your learning plan</h2>
-            <div class="progress-track" role="progressbar" aria-label="Study progress" aria-valuenow="{{ progress }}"
-                aria-valuemin="0" aria-valuemax="100">
-                <div class="progress-bar" style="width: {{ progress }}%"></div>
-            </div>
-
-            {% for topic in topics %}
-            <div class="topic">
-                <div>
-                    <div class="topic-name">{{ topic.name }}</div>
-                    {% if topic.completed %}
-                    <div class="done">✓ Completed</div>
-                    {% else %}
-                    <div>Not completed</div>
-                    {% endif %}
-                </div>
-
-                <form action="{{ url_for('toggle_topic', topic_id=topic.id) }}" method="post">
-                    <button type="submit">
-                        {{ "Mark incomplete" if topic.completed else "Mark complete" }}
-                    </button>
-                </form>
-            </div>
+    {% macro maths(calculation) %}
+    <div class="maths">
+        <p class="maths-intro">These are the actual values for this range, not a generic example.</p>
+        <ol class="maths-grid">
+            {% for step in calculation.steps %}
+            <li class="math-step">
+                <span class="step-number">{{ step.number }}</span>
+                <h4>{{ step.title }}</h4>
+                <p class="math-line">{{ step.math }}</p>
+                <p>{{ step.body }}</p>
+            </li>
             {% endfor %}
+        </ol>
+    </div>
+    {% endmacro %}
+
+    <div class="shell">
+        <header class="site-header">
+            <a class="brand" href="{{ url_for('index') }}">
+                <span class="brand-mark" aria-hidden="true">⌘</span>
+                <span>Azure Subnet Studio</span>
+            </a>
+            <p class="header-note">An AZ-104 learning companion</p>
+        </header>
+
+        <section class="hero" aria-labelledby="page-title">
+            <div>
+                <p class="eyebrow">Address-space planning, made visible</p>
+                <h1 id="page-title">Calculate it. Then understand it.</h1>
+                <p class="hero-copy">
+                    Turn an IPv4 CIDR into a complete Azure VNet plan. See the
+                    network boundary, address range, Azure reservations, and the
+                    subnetting maths behind every answer.
+                </p>
+            </div>
+            <aside class="hero-card">
+                <strong>Azure reserves 5 IPs</strong>
+                <p>Every Azure subnet keeps the first four addresses and the final address. Plan capacity with the usable count, not just the total.</p>
+            </aside>
         </section>
 
-        <section class="panel">
-            <h2>Deployment information</h2>
-            <p><strong>Application:</strong> AZ-104 Study Tracker</p>
-            <p><strong>Environment:</strong> {{ environment }}</p>
-            <p><strong>Health endpoint:</strong> <a href="/health">Check application health</a></p>
-        </section>
+        <main>
+            <div class="workspace">
+                <section class="panel calculator-panel" aria-labelledby="planner-title">
+                    <div class="panel-heading">
+                        <div>
+                            <h2 id="planner-title">Plan a VNet</h2>
+                            <p>Start with an address space, then map any subnets inside it.</p>
+                        </div>
+                        <button class="example-button" id="load-example" type="button">Load study example</button>
+                    </div>
 
-        <p class="footer">Built with Python and Flask · AZ-104 practice project</p>
-    </main>
+                    <form method="post" novalidate>
+                        <fieldset class="field">
+                            <label for="vnet-cidr">
+                                VNet address space
+                                <span class="label-hint">Host bits are fine — they will be normalized to the canonical network.</span>
+                            </label>
+                            <input
+                                id="vnet-cidr"
+                                name="vnet_cidr"
+                                type="text"
+                                value="{{ form.vnet_cidr }}"
+                                placeholder="10.0.5.23/20"
+                                spellcheck="false"
+                                autocomplete="off"
+                                aria-invalid="{{ 'true' if vnet_errors else 'false' }}"
+                                aria-describedby="vnet-error"
+                            >
+                            {% if vnet_errors %}
+                            <ul class="field-error" id="vnet-error">
+                                {% for error in vnet_errors %}<li>{{ error }}</li>{% endfor %}
+                            </ul>
+                            {% endif %}
+                        </fieldset>
+
+                        <div class="planning-heading">
+                            <div>
+                                <h3>Subnet plan <span aria-hidden="true">·</span> optional</h3>
+                                <p>Each accepted subnet must stay inside the VNet, avoid overlaps, and be /29 or larger.</p>
+                            </div>
+                        </div>
+
+                        <div class="subnet-rows" id="subnet-rows">
+                            {% for subnet in form.subnets %}
+                            <article class="subnet-row">
+                                <div class="field">
+                                    <label>Name
+                                        <input name="subnet_name" type="text" value="{{ subnet.name }}" placeholder="web" autocomplete="off">
+                                    </label>
+                                </div>
+                                <div class="field">
+                                    <label>CIDR
+                                        <input name="subnet_cidr" type="text" value="{{ subnet.cidr }}" placeholder="10.0.1.0/24" spellcheck="false" autocomplete="off" aria-invalid="{{ 'true' if subnet.errors else 'false' }}">
+                                    </label>
+                                </div>
+                                <button class="remove-row" type="button" data-remove-row aria-label="Remove subnet row">Remove</button>
+                                {% if subnet.errors %}
+                                <ul class="row-errors">
+                                    {% for error in subnet.errors %}<li>{{ error }}</li>{% endfor %}
+                                </ul>
+                                {% endif %}
+                            </article>
+                            {% endfor %}
+                        </div>
+
+                        <button class="button-secondary" id="add-subnet" type="button">+ Add another subnet</button>
+                        <div class="form-actions">
+                            <button class="button-primary" type="submit">Calculate VNet and subnets</button>
+                        </div>
+                        <p class="input-note">Calculations use Python's standard IPv4 address library. Nothing is stored or sent anywhere.</p>
+                    </form>
+                </section>
+
+                <section class="results-stack" aria-live="polite" aria-label="Calculation results">
+                    {% if not submitted %}
+                    <div class="empty-state">
+                        <div class="empty-icon" aria-hidden="true">⌁</div>
+                        <h2>Ready when you are</h2>
+                        <p>Enter a VNet CIDR to reveal its normalized range and an eight-step explanation. Use the study example to explore <strong>10.0.5.23/20</strong>.</p>
+                    </div>
+                    {% elif not vnet_result %}
+                    <div class="status status-error">
+                        <span aria-hidden="true">!</span>
+                        <div>
+                            <strong>The VNet needs attention.</strong>
+                            <p>Correct the address-space entry on the left, then calculate again. Your subnet rows will stay in place.</p>
+                        </div>
+                    </div>
+                    {% else %}
+                    <div class="status status-success">
+                        <span aria-hidden="true">✓</span>
+                        <div>
+                            <strong>VNet calculation complete.</strong>
+                            <p>{{ accepted|length }} accepted {{ 'subnet' if accepted|length == 1 else 'subnets' }} ready for your plan.</p>
+                        </div>
+                    </div>
+
+                    <article class="result-card">
+                        <div class="result-intro">
+                            <div class="result-title">
+                                <div>
+                                    <h2>Your VNet address space</h2>
+                                    <p>Entered as <code>{{ vnet_result.entered }}/{{ vnet_result.prefix }}</code>, then normalized for planning.</p>
+                                </div>
+                                <span class="tag">VNet</span>
+                            </div>
+                            <div class="canonical">
+                                <span>Canonical network CIDR</span>
+                                <code>{{ vnet_result.canonical }}</code>
+                            </div>
+                        </div>
+
+                        <div class="summary-grid">
+                            <div class="metric">
+                                <span class="metric-label">Subnet mask</span>
+                                <strong>{{ vnet_result.mask }}</strong>
+                                <small>Prefix /{{ vnet_result.prefix }}</small>
+                            </div>
+                            <div class="metric">
+                                <span class="metric-label">Network address</span>
+                                <strong>{{ vnet_result.network }}</strong>
+                                <small>Start of range</small>
+                            </div>
+                            <div class="metric">
+                                <span class="metric-label">Final address</span>
+                                <strong>{{ vnet_result.final }}</strong>
+                                <small>End of range</small>
+                            </div>
+                            <div class="metric">
+                                <span class="metric-label">Complete range</span>
+                                <strong>{{ vnet_result.range }}</strong>
+                                <small>Inclusive</small>
+                            </div>
+                            <div class="metric">
+                                <span class="metric-label">Total addresses</span>
+                                <strong>{{ vnet_result.total_display }}</strong>
+                                <small>Every IPv4 address in the range</small>
+                            </div>
+                            <div class="metric">
+                                <span class="metric-label">Azure-usable</span>
+                                <strong>{{ vnet_result.azure_usable_display }}</strong>
+                                <small>Total minus Azure's 5 reserved IPs</small>
+                            </div>
+                        </div>
+
+                        <details open>
+                            <summary>Show the VNet maths step by step</summary>
+                            {{ maths(vnet_result) }}
+                        </details>
+                    </article>
+
+                    <article class="result-card subnet-result">
+                        <h2>Accepted subnet plan</h2>
+                        <p>Only valid, contained, non-overlapping subnets appear here. Expand a row to review the same calculation method.</p>
+                        {% if accepted %}
+                        <div class="table-wrap">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th scope="col">Name</th>
+                                        <th scope="col">Canonical CIDR</th>
+                                        <th scope="col">Complete range</th>
+                                        <th scope="col">Total</th>
+                                        <th scope="col">Azure-usable</th>
+                                        <th scope="col">Lesson</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for item in accepted %}
+                                    {% set subnet = item.row.result %}
+                                    <tr>
+                                        <td class="subnet-name">{{ item.name }}</td>
+                                        <td><code>{{ subnet.canonical }}</code></td>
+                                        <td>{{ subnet.range }}</td>
+                                        <td>{{ subnet.total_display }}</td>
+                                        <td>{{ subnet.azure_usable_display }}</td>
+                                        <td>
+                                            <details class="table-maths">
+                                                <summary>Show the maths</summary>
+                                                {{ maths(subnet) }}
+                                            </details>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                        {% else %}
+                        <div class="inline-empty">No subnets have been accepted yet. Add a named CIDR above to check its size, containment, and overlap before you deploy it.</div>
+                        {% endif %}
+                    </article>
+                    {% endif %}
+                </section>
+            </div>
+        </main>
+
+        <footer class="site-footer">Built for AZ-104 practice · IPv4 planning only · Azure reserves five addresses in every subnet</footer>
+    </div>
+
+    <template id="subnet-row-template">
+        <article class="subnet-row">
+            <div class="field">
+                <label>Name
+                    <input name="subnet_name" type="text" placeholder="web" autocomplete="off">
+                </label>
+            </div>
+            <div class="field">
+                <label>CIDR
+                    <input name="subnet_cidr" type="text" placeholder="10.0.1.0/24" spellcheck="false" autocomplete="off">
+                </label>
+            </div>
+            <button class="remove-row" type="button" data-remove-row aria-label="Remove subnet row">Remove</button>
+        </article>
+    </template>
+
+    <script>
+        const rows = document.querySelector("#subnet-rows");
+        const template = document.querySelector("#subnet-row-template");
+        const vnetInput = document.querySelector("#vnet-cidr");
+
+        function addSubnetRow(name = "", cidr = "") {
+            const fragment = template.content.cloneNode(true);
+            const newRow = fragment.querySelector(".subnet-row");
+            newRow.querySelector('input[name="subnet_name"]').value = name;
+            newRow.querySelector('input[name="subnet_cidr"]').value = cidr;
+            rows.appendChild(fragment);
+        }
+
+        document.querySelector("#add-subnet").addEventListener("click", () => addSubnetRow());
+
+        rows.addEventListener("click", (event) => {
+            const button = event.target.closest("[data-remove-row]");
+            if (button) {
+                button.closest(".subnet-row").remove();
+            }
+        });
+
+        document.querySelector("#load-example").addEventListener("click", () => {
+            vnetInput.value = "10.0.5.23/20";
+            rows.replaceChildren();
+            addSubnetRow("web", "10.0.1.0/24");
+            addSubnetRow("app", "10.0.2.0/24");
+            vnetInput.focus();
+        });
+    </script>
 </body>
-
 </html>
