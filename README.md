@@ -18,17 +18,55 @@ Most subnet calculators stop at the answer. This one shows the working: canonica
   - is Azure-sized at `/29` or larger
 - Keeps invalid planner rows visible with plain-language guidance
 
-## Quick start
+## Quick Start
 
-This project uses [uv](https://docs.astral.sh/uv/) and `pyproject.toml`; it does not use `requirements.txt`.
+Follow these steps to set up and run the project locally. This project uses [uv](https://github.com/astral-sh/uv) for fast Python package and environment management.
 
+### Prerequisites
+
+Ensure you have `uv` installed on your system. If you don't have it installed yet, you can install it via:
+
+* **macOS / Linux:**
 ```bash
-cd /home/ravi/az-arena/azure-subnet-calculator
-uv sync
-uv run flask --app app run --host 127.0.0.1 --port 5000
+curl -LsSf https://astral.sh/uv/install.sh | sh
+
 ```
 
-Then open [http://127.0.0.1:5000](http://127.0.0.1:5000).
+
+* **Windows (PowerShell):**
+```powershell
+powershell -c "irm https://astral.sh/uv/install.sh | iex"
+
+```
+
+
+
+### Installation & Running
+
+1. **Clone the repository:**
+```bash
+git clone https://github.com/your-username/azure-subnet-calculator.git
+cd azure-subnet-calculator
+
+```
+
+
+2. **Sync dependencies and create the virtual environment:**
+```bash
+uv sync
+
+```
+
+
+3. **Run the application:**
+```bash
+uv run flask --app app run --host 127.0.0.1 --port 5000
+
+```
+
+
+
+The application will be accessible at `[http://127.0.0.1:5000](http://127.0.0.1:5000)`.
 
 ## A worked example
 
